@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FMCG Dashboard Demo</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo">FMCG Dashboard</div>
+      <nav class="nav">
+        <button onclick="switchViz('Summary')">Summary</button>
+        <button onclick="switchViz('SalesPerformance')">Sales Performance</button>
+        <button onclick="switchViz('Channel')">Channel</button>
+        <button onclick="switchViz('Geography')">Geography</button>
+        <button onclick="switchViz('Product')">Product</button>
+        <button onclick="switchViz('Trend')">Trend</button>
+      </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <h2 id="dashboardTitle">Sales Performance Dashboard</h2>
+      <div id="vizContainer" class="viz-container"></div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>© 2025 FMCG Dashboard Demo | Powered by Tableau</p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

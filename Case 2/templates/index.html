@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Restaurant Analytics</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
   <!-- Tableau Embedding API -->
   <script type="module" src="https://prod-apsoutheast-c.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
 </head>
@@ -51,7 +51,7 @@
       </header>
 
       <section class="viz-container">
-        <tableau-viz id="tableauViz" hide-tabs></tableau-viz>
+        <tableau-viz id="tableauViz" token ="{{ token }}" hide-tabs></tableau-viz>
       </section>
     </main>
   </div>

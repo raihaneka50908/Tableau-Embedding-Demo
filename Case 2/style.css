@@ -1,0 +1,102 @@
+/* Layout Grid */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f7faf9;
+  color: #2f3e2f;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar kiri */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #2e6f40, #3ba86d);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.sidebar .logo {
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2f3e2f;
+}
+
+/* Menu Button */
+.menu {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.menu button:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* Main Content */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 30px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  color: #2e6f40;
+  margin-bottom: 20px;
+}
+
+.viz-container {
+  flex: 1;
+  border-radius: 16px;
+  overflow: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+#tableauViz {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Restaurant Analytics</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+  <!-- Tableau Embedding API -->
+  <script type="module" src="https://prod-apsoutheast-c.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h2>🌿 Pak Budi Resto</h2>
+      </div>
+
+      <div class="filter-group">
+        <label for="branch">Pilih Cabang</label>
+        <select id="branch">
+          <option value="All">Semua Cabang</option>
+          <option value="Pluit">Pluit</option>
+          <option value="Ragunan">Ragunan</option>
+          <option value="Slipi">Slipi</option>
+          <option value="Sudirman">Sudirman</option>
+          <option value="TB Simatupang">TB Simatupang</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="year">Pilih Tahun</label>
+        <select id="year">
+          <option value="2021">2021</option>
+          <option value="2025" selected>2025</option>
+        </select>
+      </div>
+
+      <div class="menu">
+        <button id="DashboardSales">📈 Dashboard Sales</button>
+        <button id="DashboardPurchase">📦 Dashboard Purchase</button>
+        <button id="LossDetection">⚠️ Loss Detection</button>
+        <button id="CustomViz">🛠️ Custom Viz</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <header>
+        <h1 id="pageTitle">Restaurant Analytics - Sales Overview</h1>
+      </header>
+
+      <section class="viz-container">
+        <tableau-viz id="tableauViz" hide-tabs></tableau-viz>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

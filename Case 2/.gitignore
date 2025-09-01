@@ -1,5 +1,1 @@
-secretId = "30c2a16a-9e26-43ab-a700-8fcf262c24e0"
-secretValue = "b40d7zPWvgtRaaYRb9NKahVfG8mDYnPTIYk0heXC8iM="
-clientId = "e03e9687-9f8b-40ef-b77a-8a8ffd9f63b8"
-username = "muhammad.reidrisatria@langitkreasi.com"
-tokenExpiryInMinutes = 10  # Max of 10 minutes.
+*.log

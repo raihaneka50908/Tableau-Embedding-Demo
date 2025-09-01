@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Embedded Authoring with Data Source</title>
+  <script type="module">
+    import {
+      TableauAuthoringViz,
+      TableauEventType,
+    } from 'https://prod-apsoutheast-c.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
+
+    // Buat objek authoring viz
+    const viz = new TableauAuthoringViz();
+
+    // Unique workbook ID (supaya selalu fresh workbook kosong)
+    const uniqueId = crypto.randomUUID();
+
+    // URL workbook baru dengan data source terhubung
+    // ⚠️ ganti YOUR-SITE dengan nama site Anda
+    // ⚠️ ganti "SalesInventoryData" dengan nama data source yang dipublish
+    const url = `https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/Customize`;
+
+    viz.src = url;
+    viz.width = "1000px";
+    viz.height = "700px";
+
+    // Tambahkan event listener misalnya ketika workbook dipublish
+    viz.addEventListener(TableauEventType.WorkbookPublished, () => {
+      alert("Workbook berhasil dipublish!");
+    });
+
+    // Render viz setelah DOM siap
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('authoring-area').appendChild(viz);
+    });
+  </script>
+</head>
+<body>
+  <h2>Buat Dashboard Baru dari Data Source</h2>
+  <div id="authoring-area"></div>
+</body>
+</html>

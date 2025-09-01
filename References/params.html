@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Change Parameters</title>
+
+  <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js"></script>
+  
+<script>
+
+  async function setVizParam() {
+    let viz = document.getElementById("tableauViz");
+    try {
+        let newBase = document.getElementById("newSalary").value;
+        await viz.workbook.changeParameterValueAsync("Base Salary", newBase); 
+
+    } catch (error) {
+        console.log (error);
+    };
+}
+
+  </script>
+  </head>
+  <body>
+    <h1>Embedding API v3 Demo - Change Parameters</h1>
+    <form id="resizeForm">
+        <input type="number" min="0" step="1000" id="newSalary" placeholder="Base Salary">
+        <button type="button" onClick="setVizParam();">Change Parameter</button>
+    </form>
+    <div id="main" >
+      <tableau-viz
+        id="tableauViz"
+        src="https://public.tableau.com/views/Superstore_800_600/CommissionModel"
+        toolbar="hidden" hide-tabs>
+    </tableau-viz>
+    </div>
+  
+  </body>
+</html>

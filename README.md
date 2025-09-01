@@ -1,103 +1,128 @@
-# 📊 FMCG Dashboard Demo (Tableau Embedding)
+# 📊 Restaurant Analytics - Tableau Embedding
 
-Proyek ini adalah demo untuk menampilkan **dashboard Tableau** yang di-embed ke dalam website.  
-Tujuan utamanya adalah untuk menunjukan kepada calon klien (khususnya sektor **FMCG**) bahwa dashboard Tableau dapat diintegrasikan dengan mudah ke dalam aplikasi web.
-
----
-
-## 🚀 Fitur Utama
-- Embedding beberapa dashboard Tableau Public secara dinamis.
-- Navigasi antar-dashboard dengan tombol (Summary, Sales Performance, Channel, Geography, Product, Trend).
-- Tampilan web responsif dengan desain modern menggunakan CSS.
-- Judul dashboard otomatis berubah sesuai dengan dashboard yang sedang ditampilkan.
-- Struktur kode dipisahkan: `index.html`, `style.css`, dan `app.js`.
+Aplikasi web ini digunakan untuk **meng-embed dashboard Tableau** ke dalam tampilan custom.  
+Fitur utamanya adalah:
+- Memilih dashboard (Sales, Purchase, Loss Detection, atau Custom editable viz).
+- Mengatur filter berdasarkan **cabang** dan **tahun**.
+- Menggunakan **Tableau Embedding API v3** termasuk fitur **Authoring** untuk sheet custom yang editable.
 
 ---
 
-## 📂 Struktur Folder
-- index.html # Struktur utama halaman web 
-- style.css # Styling (tampilan) website
-- app.js # Logic untuk menampilkan dashboard Tableau
-- README.md # Dokumentasi proyek
+## 📂 Struktur Proyek
+```plaintext
+.
+├── index.html      # Halaman utama dengan layout sidebar + content
+├── style.css       # Styling UI
+└── app.js          # Logic interaksi Tableau dan kontrol UI
+```
+--
+## ⚙️ Prasyarat
 
----
+1. Tableau Online/Server dengan workbook yang memiliki sheet:
 
-## ⚙️ Cara Menjalankan
-1. **Clone repository** atau download project ini.
-   ```bash
-   git clone <url-repository-anda>
-2. Pastikan semua file (index.html, style.css, app.js) berada dalam satu folder.
+- SalesDashboard
+- PurchaseDashboard
+- LossDetection
+- Custom (sheet kosong untuk editable viz)
 
-3. Buka file index.html menggunakan browser (Chrome, Edge, Firefox, dsb).
+2. Hak akses user minimal Viewer untuk dashboard standar, dan Editor untuk sheet Custom.
+3. Koneksi internet ke Tableau Embedding API.
 
-4. Klik tombol navigasi di header untuk berpindah antar dashboard Tableau.
-
----
-
-## 📌 Penjelasan File
-1. index.html
-
-Membuat struktur dasar web.
-
-Menyediakan header dengan tombol navigasi.
-
-Menyediakan container (#vizContainer) tempat dashboard Tableau ditampilkan.
-
-Memanggil app.js untuk logika interaksi.
-
-2. style.css
-
-Mengatur tampilan website agar lebih modern dan profesional.
-
-Menggunakan warna biru sebagai tema utama (konsisten dengan nuansa corporate/FMCG).
-
-Menyediakan layout header, main content, dan footer.
-
-3. app.js
-
-Menggunakan Tableau JavaScript API untuk menampilkan dashboard.
-
-Fungsi utama:
-
-initViz(sheetName) → inisialisasi dashboard sesuai parameter.
-
-switchViz(sheetName) → mengganti dashboard ketika tombol diklik.
-
-Judul (#dashboardTitle) otomatis berubah sesuai dashboard yang ditampilkan.
-
----
+--
 ## 🖼️ Preview Layout
+- Sidebar kiri: berisi logo, filter cabang & tahun, serta tombol menu.
+- Main content: menampilkan judul halaman dan Tableau Viz yang diembed.
 
-Header dengan logo + tombol navigasi.
+-- 
+## 📌 Cara Menjalankan
 
-Judul dashboard di tengah.
+1. Clone repo / copy file.
+2. Buka index.html di browser modern (Chrome, Edge, Firefox).
+3. Aplikasi otomatis menampilkan Dashboard Sales saat pertama kali load.
+4. Gunakan filter dropdown (Cabang/Tahun) atau tombol menu untuk berpindah dashboard.
 
-Container besar untuk menampilkan Tableau dashboard.
+--
+## 📜 Fungsi-fungsi di app.js
+1. Daftar URL & Judul Dashboard
+```
+const vizList = [ ... ];  // daftar URL Tableau
+const titles = [ ... ];   // judul sesuai dashboard
+```
+- Menyimpan daftar URL view Tableau dan judul yang tampil di header.
 
-Footer sederhana.
----
-## 🔗 Sumber Data
+2. Helper: Loop Worksheet
+```
+async function forEachWorksheet(cb) { ... }
+```
+- Utility untuk mengiterasi semua worksheet dalam workbook aktif.
+- Dipakai saat ingin meng-apply filter ke seluruh worksheet.
 
-Untuk demo ini, digunakan dashboard dummy dari Tableau Public.
-Nantinya bisa diganti dengan dashboard internal perusahaan sesuai kebutuhan.
----
-## 🏆 Tujuan Proyek
+3. Set Parameter Tahun
+```
+async function setYearParameterFromUI() { ... }
+```
+- Mengambil nilai tahun dari dropdown #year.
+- Mengupdate parameter Tableau bernama "Tahun Hari Ini" dengan nilai tersebut.
 
-Menunjukkan kemampuan embedding Tableau di aplikasi web.
+4. Set Filter Cabang
+```
+async function setBranchFilterFromUI() { ... }
+```
+- Mengambil nilai cabang dari dropdown #branch.
+- Jika "All" → clear filter.
+- Jika cabang tertentu → apply filter ke semua worksheet yang punya field Branch.
 
-Memberikan gambaran nyata kepada klien bagaimana dashboard FMCG dapat diakses lebih mudah melalui website.
+5. Apply Semua Filter
+```
+async function applyAllFilters() { ... }
+```
+- Shortcut untuk menjalankan setYearParameterFromUI() dan setBranchFilterFromUI() sekaligus.
+- Dipanggil setelah viz siap digunakan (first interactive).
 
-Menjadi dasar presentasi/demo sebelum implementasi ke sistem yang lebih besar.
----
-## 👨‍💻 Pengembang
+6. Load Viz
+```
+function loadViz(index) { ... }
+```
+- Mengubah konten viz sesuai index menu:
 
-Project ini dibuat untuk keperluan demo internal dan presentasi kepada calon klien FMCG.
-Dikembangkan menggunakan:
+0 → Sales Dashboard
 
-HTML5
+1 → Purchase Dashboard
 
-CSS3
+2 → Loss Detection
 
-JavaScript
+3 → Custom Viz (pakai TableauAuthoringViz)
 
-Tableau JavaScript API
+- Khusus index 3, sheet ditampilkan editable dengan toolbar authoring.
+
+7. Handle FirstInteractive
+```
+function handleFirstInteractive() { ... }
+```
+- Callback saat Tableau viz siap digunakan.
+- Menyimpan reference workbook (workbook = vizEl.workbook).
+- Memanggil applyAllFilters() agar filter langsung diterapkan.
+
+8. Inisialisasi onLoad
+```
+window.onload = function () { ... }
+```
+- Mendapatkan elemen <tableau-viz>.
+- Register event listener untuk FirstInteractive.
+- Load viz pertama kali (Sales Dashboard).
+- Register event listener untuk:
+- Dropdown Tahun → setYearParameterFromUI
+- Dropdown Cabang → setBranchFilterFromUI
+- Tombol menu → loadViz(index) sesuai dashboard.
+
+--
+
+##🛠️ Ekstensi API yang Digunakan
+
+```
+TableauEventType.FirstInteractive → event saat viz siap digunakan.
+
+FilterUpdateType.Replace → mengganti filter dengan nilai baru.
+
+TableauAuthoringViz → komponen khusus untuk sheet editable.
+```

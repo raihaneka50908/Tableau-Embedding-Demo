@@ -6,10 +6,17 @@ import jwt
 # Store secrets securely based on your team's best practices.
 # See: https://help.tableau.com/current/online/en-us/connected_apps_direct.htm
 
-secretId = ""
-secretValue = ""
-clientId = ""
-username = ""
+with open("s.log", "r") as f:
+    content = f.read()
+
+creds = {}
+
+exec(content, {}, creds)
+
+secretId = creds['secretId']
+secretValue = creds['secretValue']
+clientId = creds['clientId']
+username = creds['username']
 tokenExpiryInMinutes = 10  # Max of 10 minutes.
 
 # Remove 'tableau:views:embed_authoring' scope if Authoring is not needed.

@@ -4,8 +4,7 @@ import { TableauEventType, FilterUpdateType, TableauAuthoringViz }
 const vizList = [
   "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/SalesDashboard",
   "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/PurchaseDashboard",
-  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/LossDetection",
-  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/Custom" // sheet kosong khusus
+  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/Dashboard3"
 ];
 
 const titles = [
@@ -80,19 +79,6 @@ function loadViz(index) {
   document.getElementById("pageTitle").textContent = titles[index];
 
   // Jika custom viz → gunakan TableauAuthoringViz
-  if (index === 3) {
-    const customViz = new TableauAuthoringViz();
-    customViz.src = vizList[index];
-    customViz.width = "100%";
-    customViz.height = "800px";
-
-    const container = document.querySelector(".viz-container");
-    container.innerHTML = "";
-    container.appendChild(customViz);
-
-    console.log("Loaded custom editable viz");
-    return;
-  }
 
   // Default dashboard
   vizEl.src = vizList[index];
@@ -121,5 +107,4 @@ window.onload = function () {
   document.getElementById("DashboardSales").addEventListener("click", () => loadViz(0));
   document.getElementById("DashboardPurchase").addEventListener("click", () => loadViz(1));
   document.getElementById("LossDetection").addEventListener("click", () => loadViz(2));
-  document.getElementById("CustomViz").addEventListener("click", () => loadViz(3));
 };

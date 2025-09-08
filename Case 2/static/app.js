@@ -2,16 +2,13 @@ import { TableauEventType, FilterUpdateType, TableauAuthoringViz }
   from "https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js";
 
 const vizList = [
-  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/SalesDashboard",
-  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/PurchaseDashboard",
-  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/ExampleWorkbook/Dashboard3"
+  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/DemoDashboard3/Dashboard",
+  "https://prod-apsoutheast-c.online.tableau.com/t/suplosite/views/DemoDashboard3/Purchasing",
 ];
 
 const titles = [
-  "Restaurant Analytics - Sales Overview",
-  "Restaurant Analytics - Purchase Control",
-  "Restaurant Analytics - Loss Detection",
-  "Restaurant Analytics - Custom Viz"
+  "Restaurant Analytics - Revenue And Purchasing Overview",
+  "Restaurant Analytics - Purchasing and Utility Overview",
 ];
 
 let vizEl = null;
@@ -106,5 +103,4 @@ window.onload = function () {
 
   document.getElementById("DashboardSales").addEventListener("click", () => loadViz(0));
   document.getElementById("DashboardPurchase").addEventListener("click", () => loadViz(1));
-  document.getElementById("LossDetection").addEventListener("click", () => loadViz(2));
 };

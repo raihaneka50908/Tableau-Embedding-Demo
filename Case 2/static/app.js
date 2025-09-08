@@ -1,4 +1,4 @@
-import { TableauEventType, FilterUpdateType, TableauAuthoringViz } 
+import { TableauEventType } 
   from "https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js";
 
 const vizList = [
@@ -7,85 +7,118 @@ const vizList = [
 ];
 
 const titles = [
-  "Restaurant Analytics - Revenue And Purchasing Overview",
-  "Restaurant Analytics - Purchasing and Utility Overview",
+  "Restaurant Analytics - Sales Overview",
+  "Restaurant Analytics - Purchase Overview",
 ];
 
 let vizEl = null;
-let workbook = null;
 let currentIndex = 0;
 
-/** Helper: loop semua worksheet */
+/** Helper: loop semua worksheet (jika perlu nanti) */
 async function forEachWorksheet(cb) {
-  if (!workbook) return;
-  const sheet = workbook.activeSheet;
+  if (!vizEl || !vizEl.workbook) return;
+  const sheet = vizEl.workbook.activeSheet;
   const worksheets = sheet.worksheets ? sheet.worksheets : [sheet];
   for (const ws of worksheets) {
     await cb(ws);
   }
 }
 
-/** Parameter: Tahun */
-async function setYearParameterFromUI() {
-  if (!workbook) return;
-  try {
-    const sel = document.getElementById("year");
-    const raw = sel.value;
-    const value = isNaN(Number(raw)) ? raw : Number(raw);
-    await workbook.changeParameterValueAsync("Tahun Hari Ini", value);
-    console.log("Parameter Tahun Hari Ini ->", value);
-  } catch (err) {
-    console.error("Error updating parameter:", err);
-  }
-}
+/**
+ * Helper umum: set parameter dengan memperhatikan tipe data / alias
+ */
+async function setParameterFromUI(paramName, selectId) {
+  if (!vizEl || !vizEl.workbook) return;
+  const sel = document.getElementById(selectId);
+  const raw = sel.value; // selalu string dari <select>
 
-/** Filter: Cabang */
-async function setBranchFilterFromUI() {
-  if (!workbook) return;
   try {
-    const cabang = document.getElementById("branch").value;
-    const isAll = cabang === "" || cabang === "All";
+    // ambil metadata parameter
+    const params = await vizEl.workbook.getParametersAsync();
+    const param = params.find(p => p.name === paramName);
 
-    await forEachWorksheet(async (ws) => {
-      try {
-        if (isAll) {
-          await ws.clearFilterAsync("Branch");
+    let newValue;
+
+    if (param) {
+      const domain = param.allowableValues;
+      const list = domain && Array.isArray(domain.allowableValues) ? domain.allowableValues : null;
+
+      if (list) {
+        // cari kecocokan di daftar allowableValues
+        const match = list.find(v => {
+          return String(v.nativeValue) === raw
+              || String(v.value) === raw
+              || v.aliasValue === raw
+              || String(v.formattedValue) === raw;
+        });
+
+        if (match) {
+          newValue = match.hasAlias ? match.aliasValue : match.nativeValue;
         } else {
-          await ws.applyFilterAsync("Branch", [cabang], FilterUpdateType.Replace);
+          // fallback: lihat tipe currentValue
+          const cv = param.currentValue;
+          if (cv && typeof cv.nativeValue === "number") {
+            const n = parseInt(raw, 10);
+            newValue = isNaN(n) ? raw : n;
+          } else {
+            newValue = raw;
+          }
         }
-      } catch (e) {
-        // worksheet tidak punya field Branch
+      } else {
+        // bukan list, bisa range / unconstrained
+        const cv = param.currentValue;
+        if (cv && typeof cv.nativeValue === "number") {
+          const n = parseInt(raw, 10);
+          newValue = isNaN(n) ? raw : n;
+        } else {
+          newValue = raw;
+        }
       }
-    });
+    } else {
+      // parameter tidak ditemukan
+      const n = parseInt(raw, 10);
+      newValue = isNaN(n) ? raw : n;
+    }
 
-    console.log("Filter Cabang ->", isAll ? "ALL (clear)" : cabang);
+    await vizEl.workbook.changeParameterValueAsync(paramName, newValue);
+    console.log(`Parameter ${paramName} di-set ->`, newValue);
   } catch (err) {
-    console.error("Error applying branch filter:", err);
+    console.error(`Error updating parameter ${paramName}:`, err);
   }
 }
 
-/** Apply semua filter setelah interactive */
+/** Parameter Tahun */
+async function setYearParameterFromUI() {
+  await setParameterFromUI("New Year", "year");
+}
+
+/** Parameter Bulan */
+async function setMonthParameterFromUI() {
+  await setParameterFromUI("New Month", "month");
+}
+
+/** Apply semua filter setelah viz siap */
 async function applyAllFilters() {
   await setYearParameterFromUI();
-  await setBranchFilterFromUI();
+  await setMonthParameterFromUI();
 }
 
 /** Load viz sesuai index */
 function loadViz(index) {
   currentIndex = index;
   document.getElementById("pageTitle").textContent = titles[index];
-
-  // Jika custom viz → gunakan TableauAuthoringViz
-
-  // Default dashboard
   vizEl.src = vizList[index];
 }
 
 /** Event FirstInteractive */
 function handleFirstInteractive() {
   console.log("Viz is interactive now");
-  workbook = vizEl.workbook;
   applyAllFilters();
+
+  // debug: tampilkan metadata parameter di console
+  vizEl.workbook.getParametersAsync().then(params => {
+    console.log("All Parameters:", params);
+  });
 }
 
 window.onload = function () {
@@ -99,7 +132,7 @@ window.onload = function () {
 
   // Listener UI
   document.getElementById("year").addEventListener("change", setYearParameterFromUI);
-  document.getElementById("branch").addEventListener("change", setBranchFilterFromUI);
+  document.getElementById("month").addEventListener("change", setMonthParameterFromUI);
 
   document.getElementById("DashboardSales").addEventListener("click", () => loadViz(0));
   document.getElementById("DashboardPurchase").addEventListener("click", () => loadViz(1));

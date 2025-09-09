@@ -11,7 +11,8 @@ def refresh_token():
     global current_token
     while True:
         current_token = getJwt()
-        print("Token diperbarui:", current_token)
+        #print("Token diperbarui:", current_token)
+        print("Token Diperbarui")
         time.sleep(600)  # 600 detik = 10 menit
 
 @app.route("/")
@@ -22,4 +23,4 @@ def index():
 if __name__ == "__main__":
     t = threading.Thread(target=refresh_token, daemon=True)
     t.start()
-    app.run(debug=True)
+    app.run(debug=True,port=5001)

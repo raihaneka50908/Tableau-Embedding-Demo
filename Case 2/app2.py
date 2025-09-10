@@ -32,4 +32,5 @@ def tableau_token():
     return jsonify(get_tableau_token())
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False,host="143.198.90.217",port=443,ssl_context=("../../origin.pem","../../private.key"))
+

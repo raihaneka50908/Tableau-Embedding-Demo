@@ -31,7 +31,7 @@ kid = secretId
 iss = clientId
 sub = username
 aud = "tableau"
-exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=tokenExpiryInMinutes)
+exp = datetime.datetime.utcnow() + datetime.timedelta(days=tokenExpiryInMinutes)
 jti = str(uuid.uuid4())
 scp = scopes
 

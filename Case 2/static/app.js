@@ -14,6 +14,29 @@ const titles = [
 let vizEl = null;
 let currentIndex = 0;
 
+/** 🔹 Ambil token dari token.json */
+async function loadToken() {
+  try {
+    const res = await fetch("/static/token.json?_=" + new Date().getTime()); // cache buster
+    if (!res.ok) throw new Error("Gagal ambil token.json");
+    const data = await res.json();
+    return data.token;
+  } catch (err) {
+    console.error("Error loadToken:", err);
+    return null;
+  }
+}
+
+/** 🔹 Update token di tableau-viz */
+async function refreshToken() {
+  const token = await loadToken();
+  if (!token) return;
+  if (vizEl) {
+    vizEl.setAttribute("token", token);
+    console.log("Token diperbarui:", new Date().toLocaleTimeString());
+  }
+}
+
 /** Helper: loop semua worksheet (jika perlu nanti) */
 async function forEachWorksheet(cb) {
   if (!vizEl || !vizEl.workbook) return;
@@ -24,16 +47,13 @@ async function forEachWorksheet(cb) {
   }
 }
 
-/**
- * Helper umum: set parameter dengan memperhatikan tipe data / alias
- */
+/** Helper umum: set parameter dengan memperhatikan tipe data / alias */
 async function setParameterFromUI(paramName, selectId) {
   if (!vizEl || !vizEl.workbook) return;
   const sel = document.getElementById(selectId);
   const raw = sel.value; // selalu string dari <select>
 
   try {
-    // ambil metadata parameter
     const params = await vizEl.workbook.getParametersAsync();
     const param = params.find(p => p.name === paramName);
 
@@ -44,7 +64,6 @@ async function setParameterFromUI(paramName, selectId) {
       const list = domain && Array.isArray(domain.allowableValues) ? domain.allowableValues : null;
 
       if (list) {
-        // cari kecocokan di daftar allowableValues
         const match = list.find(v => {
           return String(v.nativeValue) === raw
               || String(v.value) === raw
@@ -55,7 +74,6 @@ async function setParameterFromUI(paramName, selectId) {
         if (match) {
           newValue = match.hasAlias ? match.aliasValue : match.nativeValue;
         } else {
-          // fallback: lihat tipe currentValue
           const cv = param.currentValue;
           if (cv && typeof cv.nativeValue === "number") {
             const n = parseInt(raw, 10);
@@ -65,7 +83,6 @@ async function setParameterFromUI(paramName, selectId) {
           }
         }
       } else {
-        // bukan list, bisa range / unconstrained
         const cv = param.currentValue;
         if (cv && typeof cv.nativeValue === "number") {
           const n = parseInt(raw, 10);
@@ -75,7 +92,6 @@ async function setParameterFromUI(paramName, selectId) {
         }
       }
     } else {
-      // parameter tidak ditemukan
       const n = parseInt(raw, 10);
       newValue = isNaN(n) ? raw : n;
     }
@@ -104,10 +120,18 @@ async function applyAllFilters() {
 }
 
 /** Load viz sesuai index */
-function loadViz(index) {
+async function loadViz(index) {
   currentIndex = index;
   document.getElementById("pageTitle").textContent = titles[index];
+
+  const token = await loadToken();
+  if (!token) {
+    console.error("Token tidak ada, viz gagal dimuat");
+    return;
+  }
+
   vizEl.src = vizList[index];
+  vizEl.setAttribute("token", token);
 }
 
 /** Event FirstInteractive */
@@ -115,20 +139,20 @@ function handleFirstInteractive() {
   console.log("Viz is interactive now");
   applyAllFilters();
 
-  // debug: tampilkan metadata parameter di console
   vizEl.workbook.getParametersAsync().then(params => {
     console.log("All Parameters:", params);
   });
 }
 
-window.onload = function () {
+/** Init halaman */
+window.onload = async function () {
   vizEl = document.getElementById("tableauViz");
 
   // Event FirstInteractive
   vizEl.addEventListener(TableauEventType.FirstInteractive, handleFirstInteractive);
 
   // Initial load
-  loadViz(0);
+  await loadViz(0);
 
   // Listener UI
   document.getElementById("year").addEventListener("change", setYearParameterFromUI);
@@ -136,4 +160,7 @@ window.onload = function () {
 
   document.getElementById("DashboardSales").addEventListener("click", () => loadViz(0));
   document.getElementById("DashboardPurchase").addEventListener("click", () => loadViz(1));
+
+  // Auto refresh token tiap 8 menit
+  setInterval(refreshToken, 480 * 1000);
 };
